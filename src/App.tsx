@@ -1,13 +1,16 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import HomePage from './view/Home';
+import HomePage from './pages/Home';
+import { Provider } from 'jotai';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<HomePage />}></Route>
-      </Routes>
-    </BrowserRouter>
+    <Provider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />}></Route>
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   );
 }
 
