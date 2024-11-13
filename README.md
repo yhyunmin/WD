@@ -2,6 +2,6 @@
 
 ### 11-13
 
-1.  ![alt text](public/readme1.png)
-    ![alt text](public/readme2.png)
-2.  ![alt text](public/readme3.png)
+1.  ![alt text](public/readme1.png){: width="100" height="100"}
+    ![alt text](public/readme2.png){: width="100" height="100"}
+2.  ![alt text](public/readme3.png){: width="100" height="100"}
