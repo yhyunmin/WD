@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/c
 import { Calendar, MapPinned, SunMedium } from 'lucide-react';
 import Sunny from '@/assets/images/1000d.svg?react';
 import WidgetTitle from '@/components/common/WidgetTitle';
+import { Weather } from '@/types';
+import dayjs from 'dayjs';
 
 const T = {
   title: 'Today',
@@ -10,7 +12,8 @@ const T = {
   location: 'Seoul',
   country: 'South Korea',
 };
-const TodayWidget = () => {
+const TodayWidget = ({ data }: { data: Weather }) => {
+  const month = dayjs(data.location.localtime).format('YYYY-MM-DD');
   return (
     <Card className="flex h-full min-w-[268px] flex-col gap-2 border-zinc-300 bg-white px-6 py-6">
       <WidgetTitle title={T.title} desc={T.desc} />
@@ -18,18 +21,18 @@ const TodayWidget = () => {
         <div className="my-2 flex items-center gap-3 border-b px-2 pb-4 font-bold text-5xl">
           <Sunny width={64} height={64} />
           <div className="flex items-start">
-            <p className="font-black tracking-tighter">19</p>
+            <p className="font-black tracking-tighter">{data.current.temp_c}</p>
             <span className="text-2xl tracking-tighter">°C</span>
           </div>
         </div>
         <div className="mt-4 flex flex-col gap-2">
           <p className="f flex gap-2">
             <Calendar />
-            {T.date}
+            {month}
           </p>
           <p className="flex gap-2 text-nowrap font-normal">
             <MapPinned />
-            {T.location}-{T.country}
+            {data.location.name}-{data.location.country}
           </p>
         </div>
       </CardContent>

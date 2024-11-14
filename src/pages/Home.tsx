@@ -6,93 +6,8 @@ import TodayHighlight from '@/components/home/HighlightWidget';
 import WeeklyCard from '@/components/home/WeeklyWidget';
 import Header from '@/components/layout/Header';
 import ky from 'ky';
-import { useState } from 'react';
-
-export interface Current {
-  cloud: number;
-  condition: { text: string; icon: string; code: number };
-  dewpoint_c: number;
-  dewpoint_f: number;
-  feelslike_c: number;
-  feelslike_f: number;
-  gust_kph: number;
-  gust_mph: number;
-  heatindex_c: number;
-  heatindex_f: number;
-  humidity: number;
-  is_day: number;
-  last_updated: string;
-  last_updated_epoch: number;
-  precip_in: number;
-  precip_mm: number;
-  pressure_in: number;
-  pressure_mb: number;
-  temp_c: number;
-  temp_f: number;
-  uv: number;
-  vis_km: number;
-  vis_miles: number;
-  wind_degree: number;
-  wind_dir: string;
-  wind_kph: number;
-  wind_mph: number;
-  windchill_c: number;
-  windchill_f: number;
-}
-
-export interface Location {
-  country: string;
-  lat: number;
-  localtime: string;
-  localtime_epoch: number;
-  lon: number;
-  name: string;
-  region: string;
-  tz_id: string;
-}
-
-export interface ForecastDay {
-  astro: {
-    is_moon_up: number;
-    is_sun_up: number;
-    moon_illumination: number;
-    moon_phase: string;
-    moonrise: string;
-    moonset: string;
-    sunrise: string;
-    sunset: string;
-  };
-  date: string;
-  date_epoch: number;
-  day: {
-    avghumidity: number;
-    avgtemp_c: number;
-    avgtemp_f: number;
-    avgvis_km: number;
-    avgvis_miles: number;
-    condition: { text: string; icon: string; code: number };
-    daily_chance_of_rain: number;
-    daily_chance_of_snow: number;
-    daily_will_it_rain: number;
-    daily_will_it_snow: number;
-    maxtemp_c: number;
-    maxtemp_f: number;
-    maxwind_kph: number;
-    maxwind_mph: number;
-    mintemp_c: number;
-    mintemp_f: number;
-    totalprecip_in: number;
-    totalprecip_mm: number;
-    totalsnow_cm: number;
-    uv: number;
-  };
-  hour: hourlyData[];
-}
-export interface Weather {
-  current: Current;
-  location: Location;
-  forecast: { forecastday: ForecastDay[] };
-}
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { Weather } from '@/types';
 
 const defaultWeatherData: Weather = {
   current: {
@@ -141,15 +56,15 @@ const defaultWeatherData: Weather = {
 
 const HomePage = () => {
   const [weatherData, setWeatherData] = useState<Weather>(defaultWeatherData);
+
   const fetchApi = async (localName = 'seoul') => {
     const API_KEY = '0edfdbe00574410899c10501241411';
-    const BASE_URL = 'https://api.weatherapi.com/v1/';
+    const BASE_URL = 'https://api.weatherapi.com/v1/forecast';
     // https://api.weatherapi.com/v1/forecast.json?key=0edfdbe00574410899c10501241411&q=seoul
-    const URL = `${BASE_URL}current.json?key=${API_KEY}&q=${localName}`;
+    const URL = `${BASE_URL}.json?key=${API_KEY}&q=${localName}`;
     const searchParams = new URLSearchParams();
     searchParams.set('key', API_KEY);
     searchParams.set('q', localName);
-
     try {
       //await axios.get(BASE_URL);
       // const data = await ky(URL).json();
@@ -158,6 +73,7 @@ const HomePage = () => {
       //       }
       const data = await ky.get(`${URL}current.json`, { searchParams }).json<Weather>();
       console.log(data);
+      console.log(data.forecast.forecastday);
       setWeatherData(data);
     } catch (e) {
       console.error(e);
@@ -166,7 +82,9 @@ const HomePage = () => {
     }
   };
   useKakaoLoader();
-  fetchApi();
+  useLayoutEffect(() => {
+    fetchApi();
+  }, []);
   return (
     <>
       <main id="main" className="w-dvh h-dvh overflow-hidden bg-zinc-900 p-4 antialiased">
@@ -174,11 +92,11 @@ const HomePage = () => {
         <div className="h-full w-full gap-2 p-3">
           <section className="grid grid-cols-4 grid-rows-3 gap-4">
             <article className="col-span-1 row-span-1">
-              <TodayCard />
+              <TodayCard data={weatherData} />
             </article>
             <article className="col-span-2 row-span-1">
               {/* hourly */}
-              <HourlyCard />
+              <HourlyCard data={weatherData.forecast.forecastday[0]} />
             </article>
             <article className="col-span-1 row-span-1">
               {/* map */}
