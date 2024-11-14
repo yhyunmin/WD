@@ -20,12 +20,13 @@ export const T = {
   },
 } as const;
 
-const TodayHighlight = ({ data, tide }: { data: ForecastDay; tide: any }) => {
+const TodayHighlight = ({ data, current }: { data: ForecastDay; current: any }) => {
+  console.log(current);
   return (
     <Card className="flex h-full min-w-[268px] flex-col gap-7 border-zinc-300 bg-white px-6 py-6">
       <WidgetTitle title={T.title} desc={T.desc} />
       <CardContent className="grid grid-cols-4 gap-6 p-0">
-        <TodayOptions2 first={'05:48am'} second={'11:56am'} third={'18:14pm'} fourth={'23:22pm'} data={tide.day.tides[0].tide} />
+        <TodayOptions2 />
         <div className="col-span-2 flex flex-col gap-4 rounded-lg border border-zinc-200 bg-zinc-50 p-6">
           <ItemTitle title={T.item2.title} desc={T.item2.desc} />
           <div className="flex justify-start gap-7">
@@ -49,10 +50,10 @@ const TodayHighlight = ({ data, tide }: { data: ForecastDay; tide: any }) => {
             </div>
           </div>
         </div>
-        <TodayOption title="습도" engTitle="Humidity" value={64} symbol="%" icon="rain" />
-        <TodayOption title="기압" engTitle="Pressure" value={1024} symbol="hPa" icon="wind" />
-        <TodayOption title="가시거리" engTitle="Visibility" value={10} symbol="km" icon="cloud" />
-        <TodayOption title="체감 온도" engTitle="Feels like" value={19} symbol="°C" icon="temp" />
+        <TodayOption title="습도" engTitle="Humidity" value={current.humidity} symbol="%" icon="rain" />
+        <TodayOption title="기압" engTitle="Pressure" value={current.pressure_mb} symbol="hPa" icon="wind" />
+        <TodayOption title="가시거리" engTitle="Visibility" value={current.vis_km} symbol="km" icon="cloud" />
+        <TodayOption title="체감 온도" engTitle="Feels like" value={current.feelslike_c} symbol="°C" icon="temp" />
       </CardContent>
     </Card>
   );

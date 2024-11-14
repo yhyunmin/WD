@@ -8,7 +8,7 @@ import Header from '@/components/layout/Header';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { ForecastTideDay, Weather } from '@/types';
 import { useAtom } from 'jotai';
-import { cityNameAtom } from '@/stores';
+import { cityNameAtom, tideDataAtom } from '@/stores';
 import { weatherApi } from '@/services/api/weatherApi';
 import { defaultTideData, defaultWeatherData } from '@/constants';
 
@@ -48,9 +48,9 @@ const positions = [
 ];
 const HomePage = () => {
   const [weatherData, setWeatherData] = useState<Weather>(defaultWeatherData);
-  const [tideData, setTideData] = useState<any>(defaultTideData);
-  const [weeklyData, setWeeklyData] = useState<any>();
+  const [weeklyData, setWeeklyData] = useState<any>(defaultWeatherData);
   const [cityName, setCityName] = useAtom(cityNameAtom);
+  const [_, setTideData] = useAtom(tideDataAtom);
   // const [isLoading, setIsLoading] = useState<boolean>(false);
   useKakaoLoader();
 
@@ -123,11 +123,11 @@ const HomePage = () => {
             </article>
             <article className="col-span-3 row-span-2">
               {/* today's highlights */}
-              <TodayHighlight data={weatherData.forecast.forecastday[0]} tide={tideData} />
+              <TodayHighlight data={weatherData.forecast.forecastday[0]} current={weatherData.current} />
             </article>
             <article className="col-span-1 row-span-2">
               {/* 7days */}
-              <WeeklyCard data={weeklyData} />
+              <WeeklyCard data={weeklyData.forecast} />
             </article>
           </section>
         </div>

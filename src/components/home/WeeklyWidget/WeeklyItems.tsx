@@ -1,18 +1,30 @@
-import Cloudy from '@/assets/images/1030d.svg?react';
-import Sunny from '@/assets/images/1000d.svg?react';
+import I1000 from '@/assets/images/1000d.svg?react';
+import I1009 from '@/assets/images/1030d.svg?react';
+import I1063 from '@/assets/images/1063d.svg?react';
+import dayjs from 'dayjs';
 
 export type WeeklyPropsType = {
   date: string;
   day: string;
   maxTemp: number;
   minTemp: number;
-  condition: 'sunny' | 'cloudy';
+  condition: number;
 };
-const WeeklyItems = ({ date, day, maxTemp, minTemp, condition }: WeeklyPropsType) => {
+const WeeklyItems = ({ date, maxTemp, minTemp, condition }: WeeklyPropsType) => {
+  const day = dayjs(date).format('dddd');
+  console.log(condition, 'condition');
   return (
     <>
       <div className="flex items-center gap-2 border-b border-b-zinc-200 pb-1">
-        {condition === 'sunny' ? <Sunny width={40} height={40} color="#f37349" /> : <Cloudy width={40} height={40} />}
+        {condition === 1009 ? (
+          <I1009 width={36} height={36} />
+        ) : condition === 1000 ? (
+          <I1000 width={36} height={36} />
+        ) : condition === 1063 ? (
+          <I1063 width={36} height={36} />
+        ) : (
+          <I1000 width={36} height={36} />
+        )}
         <div className="flex w-full items-center gap-4">
           <div className="flex w-full flex-1 gap-1">
             <div className="flex w-full items-start justify-end gap-0.5">
