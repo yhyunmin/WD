@@ -5,7 +5,6 @@ import dayjs from 'dayjs';
 
 export type WeeklyPropsType = {
   date: string;
-  day: string;
   maxTemp: number;
   minTemp: number;
   condition: number;

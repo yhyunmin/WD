@@ -5,12 +5,12 @@ import { Card } from '@/components/ui/card';
 import TodayHighlight from '@/components/home/HighlightWidget';
 import WeeklyCard from '@/components/home/WeeklyWidget';
 import Header from '@/components/layout/Header';
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { ForecastTideDay, Weather } from '@/types';
+import { useEffect, useState } from 'react';
+import { Weather } from '@/types';
 import { useAtom } from 'jotai';
 import { cityNameAtom, tideDataAtom } from '@/stores';
 import { weatherApi } from '@/services/api/weatherApi';
-import { defaultTideData, defaultWeatherData } from '@/constants';
+import { defaultWeatherData } from '@/constants';
 
 const positions = [
   {
