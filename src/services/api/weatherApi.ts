@@ -1,15 +1,25 @@
 import { WeatherError } from '@/components/error/WeatherError';
 import { API_KEY, BASE_URL } from '@/services/api/config';
-import { ForecastTideDay, Weather } from '@/types';
+import { Weather } from '@/types';
 import ky from 'ky';
 
-export const weatherApi = {
+type WeatherApiType = {
+  readonly fetchData: (localName: string, days: string) => Promise<Weather>;
+  readonly fetchTideData: (localName: string, days: string) => Promise<Weather>;
+};
+
+const setSearchParams = (localName: string, days: string): URLSearchParams => {
+  const searchParams = new URLSearchParams();
+  searchParams.set('key', API_KEY);
+  searchParams.set('q', localName);
+  searchParams.set('days', days);
+  return searchParams;
+};
+
+export const weatherApi: WeatherApiType = {
   // 날씨 조회
-  async fetchData(localName: string, days: string = '1') {
-    const searchParams = new URLSearchParams();
-    searchParams.set('key', API_KEY);
-    searchParams.set('q', localName);
-    searchParams.set('days', days);
+  async fetchData(localName, days = '1') {
+    const searchParams = setSearchParams(localName, days);
     try {
       const data = await ky.get(`${BASE_URL}/forecast.json`, { searchParams }).json<Weather>();
       return data;
@@ -20,11 +30,8 @@ export const weatherApi = {
     }
   },
   // 조수간만 조회
-  async fetchTideData(localName: string, days: string = '1') {
-    const searchParams = new URLSearchParams();
-    searchParams.set('key', API_KEY);
-    searchParams.set('q', localName);
-    searchParams.set('days', days);
+  async fetchTideData(localName, days = '1') {
+    const searchParams = setSearchParams(localName, days);
     try {
       const data = await ky.get(`${BASE_URL}/marine.json`, { searchParams }).json<Weather>();
       return data;
