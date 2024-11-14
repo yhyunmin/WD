@@ -5,9 +5,168 @@ import { Card } from '@/components/ui/card';
 import TodayHighlight from '@/components/home/HighlightWidget';
 import WeeklyCard from '@/components/home/WeeklyWidget';
 import Header from '@/components/layout/Header';
+import ky from 'ky';
+import { useState } from 'react';
+
+export interface Current {
+  cloud: number;
+  condition: { text: string; icon: string; code: number };
+  dewpoint_c: number;
+  dewpoint_f: number;
+  feelslike_c: number;
+  feelslike_f: number;
+  gust_kph: number;
+  gust_mph: number;
+  heatindex_c: number;
+  heatindex_f: number;
+  humidity: number;
+  is_day: number;
+  last_updated: string;
+  last_updated_epoch: number;
+  precip_in: number;
+  precip_mm: number;
+  pressure_in: number;
+  pressure_mb: number;
+  temp_c: number;
+  temp_f: number;
+  uv: number;
+  vis_km: number;
+  vis_miles: number;
+  wind_degree: number;
+  wind_dir: string;
+  wind_kph: number;
+  wind_mph: number;
+  windchill_c: number;
+  windchill_f: number;
+}
+
+export interface Location {
+  country: string;
+  lat: number;
+  localtime: string;
+  localtime_epoch: number;
+  lon: number;
+  name: string;
+  region: string;
+  tz_id: string;
+}
+
+export interface ForecastDay {
+  astro: {
+    is_moon_up: number;
+    is_sun_up: number;
+    moon_illumination: number;
+    moon_phase: string;
+    moonrise: string;
+    moonset: string;
+    sunrise: string;
+    sunset: string;
+  };
+  date: string;
+  date_epoch: number;
+  day: {
+    avghumidity: number;
+    avgtemp_c: number;
+    avgtemp_f: number;
+    avgvis_km: number;
+    avgvis_miles: number;
+    condition: { text: string; icon: string; code: number };
+    daily_chance_of_rain: number;
+    daily_chance_of_snow: number;
+    daily_will_it_rain: number;
+    daily_will_it_snow: number;
+    maxtemp_c: number;
+    maxtemp_f: number;
+    maxwind_kph: number;
+    maxwind_mph: number;
+    mintemp_c: number;
+    mintemp_f: number;
+    totalprecip_in: number;
+    totalprecip_mm: number;
+    totalsnow_cm: number;
+    uv: number;
+  };
+  hour: hourlyData[];
+}
+export interface Weather {
+  current: Current;
+  location: Location;
+  forecast: { forecastday: ForecastDay[] };
+}
+
+const defaultWeatherData: Weather = {
+  current: {
+    cloud: 0,
+    condition: { text: '', icon: '', code: 0 },
+    dewpoint_c: 0,
+    dewpoint_f: 0,
+    feelslike_c: 0,
+    feelslike_f: 0,
+    gust_kph: 0,
+    gust_mph: 0,
+    heatindex_c: 0,
+    heatindex_f: 0,
+    humidity: 0,
+    is_day: 1,
+    last_updated: '',
+    last_updated_epoch: 0,
+    precip_in: 0,
+    precip_mm: 0,
+    pressure_in: 0,
+    pressure_mb: 0,
+    temp_c: 0,
+    temp_f: 0,
+    uv: 0,
+    vis_km: 0,
+    vis_miles: 0,
+    wind_degree: 0,
+    wind_dir: '',
+    wind_kph: 0,
+    wind_mph: 0,
+    windchill_c: 0,
+    windchill_f: 0,
+  },
+  location: {
+    country: '',
+    lat: 0,
+    localtime: '',
+    localtime_epoch: 0,
+    lon: 0,
+    name: '',
+    region: '',
+    tz_id: '',
+  },
+  forecast: { forecastday: [] },
+};
 
 const HomePage = () => {
+  const [weatherData, setWeatherData] = useState<Weather>(defaultWeatherData);
+  const fetchApi = async (localName = 'seoul') => {
+    const API_KEY = '0edfdbe00574410899c10501241411';
+    const BASE_URL = 'https://api.weatherapi.com/v1/';
+    // https://api.weatherapi.com/v1/forecast.json?key=0edfdbe00574410899c10501241411&q=seoul
+    const URL = `${BASE_URL}current.json?key=${API_KEY}&q=${localName}`;
+    const searchParams = new URLSearchParams();
+    searchParams.set('key', API_KEY);
+    searchParams.set('q', localName);
+
+    try {
+      //await axios.get(BASE_URL);
+      // const data = await ky(URL).json();
+      //       if(res.status ===200){
+      // setWeatherData(res.data);
+      //       }
+      const data = await ky.get(`${URL}current.json`, { searchParams }).json<Weather>();
+      console.log(data);
+      setWeatherData(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      console.log('fetchAPI called');
+    }
+  };
   useKakaoLoader();
+  fetchApi();
   return (
     <>
       <main id="main" className="w-dvh h-dvh overflow-hidden bg-zinc-900 p-4 antialiased">
