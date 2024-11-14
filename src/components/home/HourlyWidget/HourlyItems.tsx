@@ -19,7 +19,8 @@ const HourlyContents = ({ item }: { item: hourlyData }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-1 rounded-md border border-zinc-200 bg-zinc-50 p-2 px-5">
       <p className="text-nowrap font-medium text-sm">{dayjs(item.time).format('A h시')}</p>
-      <MoonStar width={48} height={48} />
+      {/* <MoonStar width={48} height={48} /> */}
+      <img src={item.condition.icon} alt="weather icon" />
       <div className="flex gap-0.5">
         <p className="font-bold text-xl tracking-tighter">{item.temp_c}</p>
         <span className="font-medium text-sm tracking-tighter">°C</span>

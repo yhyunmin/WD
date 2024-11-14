@@ -5,6 +5,7 @@ import TodayOptions2 from '@/components/home/HighlightWidget/HighlightItems2';
 import { Card, CardContent } from '@/components/ui/card';
 import ItemTitle from '@/components/common/ItemTitle';
 import WidgetTitle from '@/components/common/WidgetTitle';
+import { ForecastDay } from '@/types';
 
 export const T = {
   title: "Today's Highlights",
@@ -19,12 +20,12 @@ export const T = {
   },
 } as const;
 
-const TodayHighlight = () => {
+const TodayHighlight = ({ data, tide }: { data: ForecastDay; tide: any }) => {
   return (
     <Card className="flex h-full min-w-[268px] flex-col gap-7 border-zinc-300 bg-white px-6 py-6">
       <WidgetTitle title={T.title} desc={T.desc} />
       <CardContent className="grid grid-cols-4 gap-6 p-0">
-        <TodayOptions2 first={'05:48am'} second={'11:56am'} third={'18:14pm'} fourth={'23:22pm'} />
+        <TodayOptions2 first={'05:48am'} second={'11:56am'} third={'18:14pm'} fourth={'23:22pm'} data={tide.day.tides[0].tide} />
         <div className="col-span-2 flex flex-col gap-4 rounded-lg border border-zinc-200 bg-zinc-50 p-6">
           <ItemTitle title={T.item2.title} desc={T.item2.desc} />
           <div className="flex justify-start gap-7">
@@ -34,7 +35,7 @@ const TodayHighlight = () => {
               </div>
               <div className="flex flex-col justify-center gap-0.5">
                 <p className="font-medium text-zinc-400">Sunrise</p>
-                <h3 className="font-bold text-2xl tracking-tighter text-zinc-800">07:00AM</h3>
+                {data && <h3 className="font-bold text-2xl tracking-tighter text-zinc-800">{data.astro.sunrise}</h3>}
               </div>
             </div>
             <div className="flex w-full items-center justify-end gap-4">
@@ -43,7 +44,7 @@ const TodayHighlight = () => {
               </div>
               <div className="flex flex-col justify-center gap-0.5">
                 <p className="font-medium text-zinc-400">Sunset</p>
-                <h3 className="font-bold text-2xl tracking-tighter text-zinc-800">05:34AM</h3>
+                {data && <h3 className="font-bold text-2xl tracking-tighter text-zinc-800">{data.astro.sunset}</h3>}
               </div>
             </div>
           </div>

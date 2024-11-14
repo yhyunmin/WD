@@ -1,6 +1,7 @@
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
-import { Calendar, MapPinned, SunMedium } from 'lucide-react';
-import Sunny from '@/assets/images/1000d.svg?react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Calendar, MapPinned } from 'lucide-react';
+import Day from '@/assets/images/1000d.svg?react';
+import Night from '@/assets/images/1000n.svg?react';
 import WidgetTitle from '@/components/common/WidgetTitle';
 import { Weather } from '@/types';
 import dayjs from 'dayjs';
@@ -19,7 +20,7 @@ const TodayWidget = ({ data }: { data: Weather }) => {
       <WidgetTitle title={T.title} desc={T.desc} />
       <CardContent className="p-0">
         <div className="my-2 flex items-center gap-3 border-b px-2 pb-4 font-bold text-5xl">
-          <Sunny width={64} height={64} />
+          {Number(dayjs(data.location.localtime).format('HH')) < 12 ? <Night width={64} height={64} /> : <Day width={64} height={64} />}
           <div className="flex items-start">
             <p className="font-black tracking-tighter">{data.current.temp_c}</p>
             <span className="text-2xl tracking-tighter">°C</span>

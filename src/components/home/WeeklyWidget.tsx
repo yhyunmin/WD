@@ -1,6 +1,6 @@
 import WidgetTitle from '@/components/common/WidgetTitle';
 import WeeklyItems, { WeeklyPropsType } from '@/components/home/WeeklyWidget/WeeklyItems';
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 const T = {
   title: '7 Days',
@@ -58,13 +58,13 @@ const weeklyData: WeeklyPropsType[] = [
   },
 ];
 
-const WeeklyCard = () => {
+const WeeklyCard = ({ data }: { data: any }) => {
   return (
     <Card className="flex h-full min-w-[268px] flex-col gap-2 border-zinc-300 bg-white px-6 py-6">
       <WidgetTitle title={T.title} desc={T.desc} />
       <CardContent className="flex flex-col justify-between px-0 py-5">
         {weeklyData.map((v) => {
-          return <WeeklyItems date={v.date} day={v.day} maxTemp={v.maxTemp} minTemp={v.minTemp} condition={v.condition} />;
+          return <WeeklyItems date={v.date} day={v.day} maxTemp={v.maxTemp} minTemp={v.minTemp} condition={v.condition} key={v.date} />;
         })}
       </CardContent>
     </Card>

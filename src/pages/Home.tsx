@@ -1,94 +1,79 @@
-import { Map, useKakaoLoader } from 'react-kakao-maps-sdk';
+import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
 import TodayCard from '@/components/home/TodayWidget';
 import HourlyCard from '@/components/home/HourlyWidget';
 import { Card } from '@/components/ui/card';
 import TodayHighlight from '@/components/home/HighlightWidget';
 import WeeklyCard from '@/components/home/WeeklyWidget';
 import Header from '@/components/layout/Header';
-import ky from 'ky';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { Weather } from '@/types';
+import { ForecastTideDay, Weather } from '@/types';
+import { useAtom } from 'jotai';
+import { cityNameAtom } from '@/stores';
+import { weatherApi } from '@/services/api/weatherApi';
+import { defaultTideData, defaultWeatherData } from '@/constants';
 
-const defaultWeatherData: Weather = {
-  current: {
-    cloud: 0,
-    condition: { text: '', icon: '', code: 0 },
-    dewpoint_c: 0,
-    dewpoint_f: 0,
-    feelslike_c: 0,
-    feelslike_f: 0,
-    gust_kph: 0,
-    gust_mph: 0,
-    heatindex_c: 0,
-    heatindex_f: 0,
-    humidity: 0,
-    is_day: 1,
-    last_updated: '',
-    last_updated_epoch: 0,
-    precip_in: 0,
-    precip_mm: 0,
-    pressure_in: 0,
-    pressure_mb: 0,
-    temp_c: 0,
-    temp_f: 0,
-    uv: 0,
-    vis_km: 0,
-    vis_miles: 0,
-    wind_degree: 0,
-    wind_dir: '',
-    wind_kph: 0,
-    wind_mph: 0,
-    windchill_c: 0,
-    windchill_f: 0,
+const positions = [
+  {
+    cityName: 'seoul',
+    latlng: { lat: 37.5683, lng: 126.9778 },
   },
-  location: {
-    country: '',
-    lat: 0,
-    localtime: '',
-    localtime_epoch: 0,
-    lon: 0,
-    name: '',
-    region: '',
-    tz_id: '',
+  {
+    cityName: 'incheon',
+    latlng: { lat: 37.4562557, lng: 126.7052062 },
   },
-  forecast: { forecastday: [] },
-};
-
+  {
+    cityName: 'gwangju',
+    latlng: { lat: 35.1599785, lng: 126.8513072 },
+  },
+  {
+    cityName: 'daejeon',
+    latlng: { lat: 36.3504567, lng: 127.3848187 },
+  },
+  {
+    cityName: 'cheongju',
+    latlng: { lat: 36.6358093, lng: 127.4913338 },
+  },
+  {
+    cityName: 'daegu',
+    latlng: { lat: 35.8715411, lng: 128.601505 },
+  },
+  {
+    cityName: 'ulsan',
+    latlng: { lat: 35.5396224, lng: 129.3115276 },
+  },
+  {
+    cityName: 'busan',
+    latlng: { lat: 35.179665, lng: 129.0747635 },
+  },
+];
 const HomePage = () => {
   const [weatherData, setWeatherData] = useState<Weather>(defaultWeatherData);
-
-  const fetchApi = async (localName = 'seoul') => {
-    const API_KEY = '0edfdbe00574410899c10501241411';
-    const BASE_URL = 'https://api.weatherapi.com/v1/forecast';
-    // https://api.weatherapi.com/v1/forecast.json?key=0edfdbe00574410899c10501241411&q=seoul
-    const URL = `${BASE_URL}.json?key=${API_KEY}&q=${localName}`;
-    const searchParams = new URLSearchParams();
-    searchParams.set('key', API_KEY);
-    searchParams.set('q', localName);
-    try {
-      //await axios.get(BASE_URL);
-      // const data = await ky(URL).json();
-      //       if(res.status ===200){
-      // setWeatherData(res.data);
-      //       }
-      const data = await ky.get(`${URL}current.json`, { searchParams }).json<Weather>();
-      console.log(data);
-      console.log(data.forecast.forecastday);
-      setWeatherData(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      console.log('fetchAPI called');
-    }
-  };
+  const [tideData, setTideData] = useState<any>(defaultTideData);
+  const [weeklyData, setWeeklyData] = useState<any>();
+  const [cityName, setCityName] = useAtom(cityNameAtom);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   useKakaoLoader();
-  useLayoutEffect(() => {
-    fetchApi();
-  }, []);
+
+  useEffect(() => {
+    // setIsLoading(true);
+    weatherApi.fetchData(cityName, '1').then((w) => {
+      setWeatherData(w);
+    });
+    weatherApi.fetchTideData(cityName, '1').then((t) => {
+      setTideData(t.forecast.forecastday[0]);
+    });
+    weatherApi.fetchData(cityName, '7').then((w) => {
+      setWeeklyData(w);
+    });
+    // } catch (e) {}
+    // setIsLoading(false);
+  }, [cityName]);
+
   return (
     <>
       <main id="main" className="w-dvh h-dvh overflow-hidden bg-zinc-900 p-4 antialiased">
         <Header />
+        {/* {isLoading && <div className="flex h-full w-full items-center justify-center bg-transparent text-black">Loading</div>} */}
         <div className="h-full w-full gap-2 p-3">
           <section className="grid grid-cols-4 grid-rows-3 gap-4">
             <article className="col-span-1 row-span-1">
@@ -116,16 +101,33 @@ const HomePage = () => {
                   }}
                   /** 지도의 확대 레벨 */
                   level={13}
-                />
+                >
+                  {positions.map((position, _) => (
+                    <MapMarker
+                      key={`${position.cityName}-${position.latlng}`}
+                      position={position.latlng} // 마커를 표시할 위치
+                      image={{
+                        src: 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png', // 마커이미지의 주소입니다
+                        size: {
+                          width: 24,
+                          height: 35,
+                        }, // 마커이미지의 크기입니다
+                      }}
+                      title={position.cityName} // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다.
+                      clickable={true} // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
+                      onClick={(marker) => setCityName(marker.getTitle())}
+                    />
+                  ))}
+                </Map>
               </Card>
             </article>
             <article className="col-span-3 row-span-2">
               {/* today's highlights */}
-              <TodayHighlight />
+              <TodayHighlight data={weatherData.forecast.forecastday[0]} tide={tideData} />
             </article>
             <article className="col-span-1 row-span-2">
               {/* 7days */}
-              <WeeklyCard />
+              <WeeklyCard data={weeklyData} />
             </article>
           </section>
         </div>

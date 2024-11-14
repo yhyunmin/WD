@@ -1,7 +1,7 @@
 import WidgetTitle from '@/components/common/WidgetTitle';
 import HourlyContents from '@/components/home/HourlyWidget/HourlyItems';
 import { Card, CardContent } from '@/components/ui/card';
-import { ForecastDay, Weather, hourlyData } from '@/types';
+import { ForecastDay } from '@/types';
 
 export const T = {
   title: 'Hourly',
@@ -9,7 +9,6 @@ export const T = {
 } as const;
 
 const HourlyCard = ({ data }: { data: ForecastDay }) => {
-  console.log(data, 'data');
   return (
     <>
       <Card className="flex h-full min-w-[268px] flex-col gap-7 border-zinc-300 bg-white px-6 py-6">
@@ -17,7 +16,7 @@ const HourlyCard = ({ data }: { data: ForecastDay }) => {
         <CardContent className="scrollbar-hidden shade relative flex gap-4 overflow-x-scroll p-0">
           {data &&
             data.hour.map((item) => {
-              return <HourlyContents item={item} />;
+              return <HourlyContents item={item} key={item.time} />;
             })}
         </CardContent>
       </Card>
